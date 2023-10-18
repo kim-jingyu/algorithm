@@ -22,8 +22,21 @@ def fibonacci_recursive(n):
     elif n == 2:
         return [1, 1]
 
-    return fibonacci_recursive(n-1) + fibonacci_recursive(n-2)
+    return fibonacci_recursive(n - 1) + fibonacci_recursive(n - 2)
+
+
+def fibonacci_another_recursive(n):
+    if n <= 0:
+        return []
+    elif n == 1:
+        return [1]
+    elif n == 2:
+        return [1, 1]
+    else:
+        sequence = fibonacci_another_recursive(n - 1)
+        sequence.append(sequence[-1] + sequence[-2])
+        return sequence
 
 
 if __name__ == '__main__':
-    print(fibonacci_loop(10))
+    print(fibonacci_another_recursive(10))
