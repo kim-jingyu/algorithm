@@ -38,5 +38,15 @@ def fibonacci_another_recursive(n):
         return sequence
 
 
+dp = [1, 1] + [0] * 9
+
+
+def fibo_dp(n):
+    if dp[n]:
+        return n
+    dp[n] = fibo_dp(n - 1) + fibo_dp(n - 2)
+    return dp[n]
+
+
 if __name__ == '__main__':
-    print(fibonacci_another_recursive(10))
+    print(fibo_dp(3))
