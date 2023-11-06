@@ -162,9 +162,20 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
   return new_node;
 }
 
+// RB tree 내에 해당하는 key가 있는지 탐색하여 해당 node pointer를 반환한다. 물론 해당하는 node가 없으면 NULL을 반환한다.
 node_t *rbtree_find(const rbtree *t, const key_t key) {
   // TODO: implement find
-  return t->root;
+  node_t *now = t->root;
+
+  while (now != t->nil) {
+    if (key == now->key) {
+      return now;
+    } else {
+      now = (key > now->key) ? now->right : now->left; 
+    }
+  }
+  
+  return NULL;
 }
 
 node_t *rbtree_min(const rbtree *t) {
