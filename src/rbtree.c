@@ -178,14 +178,28 @@ node_t *rbtree_find(const rbtree *t, const key_t key) {
   return NULL;
 }
 
+// RB tree 중 최소값을 가진 node pointer를 반환한다.
 node_t *rbtree_min(const rbtree *t) {
   // TODO: implement find
-  return t->root;
+  node_t *now = t->root;
+
+  while (now->left != t->nil) {
+    now = now->left;
+  }
+
+  return now;
 }
 
+// RB tree 중 최대값을 가진 node pointer를 반환한다.
 node_t *rbtree_max(const rbtree *t) {
   // TODO: implement find
-  return t->root;
+  node_t *now = t->root;
+
+  while (now->right != t->nil) {
+    now = now->right;
+  }
+
+  return now;
 }
 
 int rbtree_erase(rbtree *t, node_t *p) {
@@ -193,6 +207,7 @@ int rbtree_erase(rbtree *t, node_t *p) {
   return 0;
 }
 
+// RB tree 내용을 key 순서대로 array로 변환한다.
 int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
   // TODO: implement to_array
   return 0;
