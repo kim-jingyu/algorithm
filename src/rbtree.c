@@ -202,8 +202,139 @@ node_t *rbtree_max(const rbtree *t) {
   return now;
 }
 
+// 삭제하고자 하는 노드를 대체할 노드를 찾아, 삭제하고자 하는 노드에 대입할 동작을 수행하는 함수. (이식)
+// u 자리에 v 노드를 심는 의미이고, u의 부모가 가리키는 것이 v이다.
+void transplant(rbtree *t, node_t *u, node_t *v) {
+  node_t *parent = u->parent;
+
+  if (parent == t->nil) { // u가 루트 노드일 때
+    t->root = v;
+  } else if (u == parent->left) {
+    parent->left = v;
+  } else {
+    parent->right = v;
+  }
+
+  v->parent = parent;
+}
+
+node_t *find_successor(rbtree *t, node_t *node) {
+  while (node->left != t->nil) {
+    node = node->left;
+  }
+  return node;
+}
+
+void erase_fixup(rbtree *t, node_t *x) {
+  // x의 형제를 가리키기 위해서 포인터 w 사용
+  node_t *w;
+
+  while (x != t->root && x->color == RBTREE_BLACK) {
+    if (x == x->parent->left) { // x가 왼쪽에 있으면
+      w = x->parent->right;
+
+      // case1
+      if (w->color == RBTREE_RED) {
+        w->color = RBTREE_BLACK;
+        x->parent->color = RBTREE_RED;
+        left_rotate(t, x->parent);
+        w = x->parent->right;
+      }
+
+      // case2
+      if (w->left->color == RBTREE_BLACK && w->right->color == RBTREE_BLACK) {
+        w->color = RBTREE_RED;
+        x = x->parent;
+      } else {
+
+        // case3
+        if (w->right->color == RBTREE_BLACK) {
+          w->left->color = RBTREE_BLACK;
+          w->color = RBTREE_RED;
+          right_rotate(t, w);
+          w = x->parent->right;
+        }
+
+        // case4
+        w->color = x->parent->color;
+        x->parent->color = RBTREE_BLACK;
+        w->right->color = RBTREE_BLACK;
+        left_rotate(t, x->parent);
+        x = t->root;
+      }
+    } else { // x가 오른쪽에 있으면
+      w = x->parent->left;
+
+      // case1
+      if (w->color == RBTREE_RED) {
+        w->color = RBTREE_BLACK;
+        x->parent->color = RBTREE_RED;
+        right_rotate(t, x->parent);
+        w = x->parent->left;
+      }
+
+      // case2
+      if (w->left->color == RBTREE_BLACK && w->right->color == RBTREE_BLACK) {
+        w->color = RBTREE_RED;
+        x = x->parent;
+      } else {
+        // case3
+        if (w->left->color == RBTREE_BLACK) {
+          w->right->color = RBTREE_BLACK;
+          w->color = RBTREE_RED;
+          left_rotate(t, w);
+          w = x->parent->left;
+        }
+
+        // case4
+        w->color = x->parent->color;
+        x->parent->color = RBTREE_BLACK;
+        w->left->color = RBTREE_BLACK;
+        right_rotate(t, x->parent);
+        x = t->root;
+      }
+    }
+  }
+  x->color = RBTREE_BLACK;
+}
+
 int rbtree_erase(rbtree *t, node_t *p) {
   // TODO: implement erase
+  node_t *y = p; // y는 트리에서 삭제된 노드 또는 트리에서 이동한 노드를 가리킨다.
+  color_t y_original_color = y->color;
+  node_t *x; // y의 오른쪽 자식
+
+  if (p->left == t->nil) { // p의 자식이 오른쪽만 있을때
+    x = p->right;
+    transplant(t, p, p->right);
+  } else if (p->right == t->nil) { // p의 자식이 왼쪽만 있을때
+    x = p->left;
+    transplant(t, p, p->left);
+  } else {
+    y = find_successor(t, p->right);
+    y_original_color = y->color; // 삭제될 successor의 색 저장
+    x = y->right; // successor의 오른쪽 저장
+
+    if (y->parent == p) {
+      x->parent = y;
+    } else {
+      transplant(t, y, y->right);
+      y->right = p->right;
+      y->right->parent = y;
+    }
+
+    transplant(t, p, y);
+    y->left = p->left;
+    y->left->parent = y;
+    y->color = p->color;
+  }
+
+  if (y_original_color == RBTREE_BLACK) {
+    erase_fixup(t, x);
+  }
+
+  free(p);
+
   return 0;
 }
 
