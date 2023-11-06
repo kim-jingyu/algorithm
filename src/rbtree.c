@@ -30,6 +30,53 @@ void delete_rbtree(rbtree *t) {
   }
 }
 
+void right_rotate(rbtree *t, node_t *y) {
+  node_t *x = y->left; // 현재 y가 부모, x가 자식
+  node_t *grand_parent = y->parent;
+
+  // x 자식 베타를 y 자식으로 넣어주기
+  y->left = x->right; 
+  if (x->right != t->nil) {
+    x->right->parent = y;
+  }
+
+  x->parent = grand_parent;
+  if (grand_parent == t->nil) {
+    t->root = x;
+  } else if (y == grand_parent->left) {
+    grand_parent->left = x;
+  } else {
+    grand_parent->right = y;
+  }
+
+  x->right = y;
+  y->parent = x;
+}
+
+void left_rotate(rbtree *t, node_t *x) {
+  node_t *y = x->right; // 현재 x가 부모, y가 자식
+  node_t *grand_parent = x->parent;
+
+  // y 자식 베타를 x 자식으로 넣어주기
+  x->right = y->left; 
+  if (y->left != t->nil) {
+    y->left->parent = x;
+  }
+
+  y->parent = grand_parent;
+  if (grand_parent == t->nil) {
+    t->root = y;
+  } else if (x == grand_parent->left) {
+    grand_parent->left = y;
+  } else {
+    grand_parent->right = y;
+  }
+
+  y->left = x;
+  x->parent = y;
+}
+
+
 node_t *rbtree_insert(rbtree *t, const key_t key) {
   // TODO: implement insert
   return t->root;
