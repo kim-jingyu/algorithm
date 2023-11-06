@@ -12,9 +12,22 @@ rbtree *new_rbtree(void) {
   return p;
 }
 
+void delete_node(rbtree *t, node_t *node) {
+  if (node->left != t->nil){
+    delete_node(t, node->left);
+  } else if (node->right != t->nil) {
+    delete_node(t, node->right);
+  }
+  
+  free(node);
+}
+
 void delete_rbtree(rbtree *t) {
   // TODO: reclaim the tree nodes's memory
-  free(t);
+  node_t *node = t->root;
+  if (node != t->nil) {
+    delete_node(t, node);
+  }
 }
 
 node_t *rbtree_insert(rbtree *t, const key_t key) {
