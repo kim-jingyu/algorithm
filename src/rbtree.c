@@ -332,8 +332,31 @@ int rbtree_erase(rbtree *t, node_t *p) {
   return 0;
 }
 
-// RB tree 내용을 key 순서대로 array로 변환한다.
+void inorder_traverse(rbtree *t, node_t *now, int *idx, key_t *arr, size_t n) {
+  if(now == t->nil) {
+    return;
+  }
+
+  inorder_traverse(t, now->left, idx, arr, n);
+  if ((*idx) < n) {
+    arr[(*idx)++] = now->key;
+  } else {
+    return;
+  }
+  inorder_traverse(t, now->right, idx, arr, n);
+}
+
+// 트리를 배열로 변환 -> inorder traversing으로 구현!!! 
+// traversing 순서: node, node->left, node->right
 int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
   // TODO: implement to_array
+  node_t *current = t->root;
+  if (current == t->nil) {
+    return 0;
+  }
+
+  int idx = 0;
+  inorder_traverse(t, current, &idx, arr, n);
+
   return 0;
 }
