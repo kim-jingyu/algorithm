@@ -1,5 +1,6 @@
 #include "rbtree.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 rbtree *new_rbtree(void) {
   rbtree *p = (rbtree *)calloc(1, sizeof(rbtree));
@@ -45,7 +46,7 @@ void right_rotate(rbtree *t, node_t *y) {
   } else if (y == y->parent->left) {
     y->parent->left = x;
   } else {
-    y->parent->right = y;
+    y->parent->right = x;
   }
 
   x->right = y;
@@ -159,7 +160,6 @@ node_t *rbtree_find(const rbtree *t, const key_t key) {
   }
 
   node_t *now = t->root;
-
   while (now != t->nil) {
     if (key < now->key) {
       now = now->left;
@@ -169,7 +169,6 @@ node_t *rbtree_find(const rbtree *t, const key_t key) {
       return now;
     }
   }
-  
   return NULL;
 }
 
